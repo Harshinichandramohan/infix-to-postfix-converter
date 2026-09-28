@@ -1,0 +1,1057 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StackFlow • Infix to Postfix</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#050816;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+    color:#f5f7ff;
+}
+
+#app{
+    min-height:100vh;
+    background:
+    radial-gradient(circle at 8% 0%,rgba(124,92,255,.32),transparent 25%),
+    radial-gradient(circle at 92% 12%,rgba(0,229,255,.2),transparent 23%),
+    linear-gradient(135deg,#050816 0%,#0b1230 48%,#030712 100%);
+}
+
+.header{
+    padding:52px 6vw 36px;
+    border-bottom:1px solid rgba(255,255,255,.12);
+    background:rgba(8,12,28,.82);
+}
+
+.eyebrow{
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:#9b8cff;
+    font-weight:900;
+}
+
+.header h1{
+    margin:10px 0;
+    font-size:clamp(34px,5vw,58px);
+    color:white;
+}
+
+.header p{
+    margin:0;
+    color:#b8c1d9;
+    max-width:760px;
+    font-size:16px;
+    line-height:1.7;
+}
+
+.main{
+    width:min(1180px,92vw);
+    margin:30px auto 55px;
+}
+
+.card{
+    background:rgba(20,27,52,.78);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:22px;
+    padding:24px;
+    margin-bottom:22px;
+}
+
+.card h2{
+    margin:0 0 5px;
+}
+
+.sub{
+    color:#9da8c2;
+    font-size:13px;
+    line-height:1.7;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:999px;
+    background:rgba(139,124,255,.14);
+    border:1px solid rgba(139,124,255,.22);
+    color:#b8acff;
+    font-size:11px;
+    font-weight:900;
+}
+
+.result{
+    margin-top:18px;
+    padding:16px;
+    border-radius:14px;
+    background:linear-gradient(
+        135deg,
+        rgba(124,92,255,.16),
+        rgba(0,210,255,.08)
+    );
+    border:1px solid rgba(139,124,255,.22);
+}
+
+.result label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:#9da8c2;
+    font-weight:900;
+}
+
+.result code{
+    display:block;
+    font-size:24px;
+    margin-top:6px;
+    font-weight:900;
+    color:#b9adff;
+    word-break:break-all;
+}
+
+.rules{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.rule{
+    padding:16px;
+    background:rgba(3,7,18,.65);
+    border:1px solid rgba(255,255,255,.08);
+    border-left:4px solid #7c5cff;
+    border-radius:12px;
+}
+
+.rule-title{
+    color:#b9adff;
+    font-weight:900;
+    margin-bottom:7px;
+}
+
+.rule-text{
+    color:#dce5ff;
+    line-height:1.6;
+}
+
+.memory{
+    margin-top:18px;
+    padding:18px;
+    border-radius:14px;
+    background:linear-gradient(
+        135deg,
+        rgba(124,92,255,.16),
+        rgba(0,210,255,.08)
+    );
+    line-height:2;
+}
+
+textarea{
+    width:100%;
+    min-height:82px;
+    resize:vertical;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(6,10,24,.7);
+    color:white;
+    border-radius:14px;
+    padding:15px;
+    font:600 16px ui-monospace,SFMono-Regular,Menlo,monospace;
+    outline:none;
+}
+
+textarea:focus{
+    border-color:#8b7cff;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+    flex-wrap:wrap;
+}
+
+button{
+    border:0;
+    border-radius:11px;
+    padding:11px 16px;
+    font-weight:800;
+    cursor:pointer;
+    background:linear-gradient(135deg,#7c5cff,#5b8cff);
+    color:white;
+}
+
+button.secondary{
+    background:rgba(255,255,255,.07);
+    color:#e9ecf7;
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.steps{
+    margin-top:20px;
+    overflow:auto;
+}
+
+.steps table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+}
+
+.steps th,
+.steps td{
+    text-align:left;
+    padding:10px 8px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.steps th{
+    color:#8f9bb7;
+    font-size:11px;
+    text-transform:uppercase;
+}
+
+.steps td{
+    color:#d7dcef;
+}
+
+.stack{
+    font-family:ui-monospace,monospace;
+}
+
+.pseudo{
+    background:rgba(3,7,18,.78);
+    color:#dce5ff;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    padding:17px;
+    overflow:auto;
+    font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;
+    white-space:pre;
+}
+
+.note{
+    font-size:13px;
+    color:#aab4cc;
+    line-height:1.65;
+    margin-top:14px;
+}
+
+@media(max-width:850px){
+    .main{
+        width:min(94vw,720px);
+    }
+
+    .header{
+        padding-left:3vw;
+        padding-right:3vw;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<header class="header">
+
+    <div class="eyebrow">
+        ✦ DATA STRUCTURES • C MINI PROJECT
+    </div>
+
+    <h1>
+        StackFlow <span>Infix → Postfix</span>
+    </h1>
+
+    <p>
+        Interactive stack visualizer for converting
+        infix expressions into postfix notation.
+    </p>
+
+    <div class="actions" style="margin-top:18px">
+
+        <span class="badge">▣ STACK BASED</span>
+
+        <span class="badge">⌘ C IMPLEMENTATION</span>
+
+        <span class="badge">● LIVE TRACE</span>
+
+    </div>
+
+</header>
+
+
+<main class="main">
+
+
+<!-- TOPIC INTRODUCTION -->
+
+<section class="card">
+
+    <span class="badge">
+        01 • TOPIC INTRODUCTION
+    </span>
+
+    <h2 style="margin-top:10px">
+        What is Infix to Postfix Conversion?
+    </h2>
+
+    <p class="sub">
+        An infix expression places operators between operands,
+        such as <b>A + B</b>.
+    </p>
+
+    <p class="sub">
+        A postfix expression places the operator after its operands,
+        such as <b>AB+</b>.
+    </p>
+
+    <p class="sub">
+        A stack is used to temporarily store operators and
+        parentheses during conversion.
+    </p>
+
+    <div class="result">
+
+        <label>Simple Idea</label>
+
+        <div style="margin-top:8px;line-height:1.9">
+
+            <b>Infix:</b> A + B
+
+            &nbsp; → &nbsp;
+
+            <b>Postfix:</b> AB+
+
+            &nbsp; → &nbsp;
+
+            <b>Stack:</b> manages operators
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SIMPLE RULES -->
+
+<section class="card">
+
+    <span class="badge">
+        02 • CONVERSION RULES
+    </span>
+
+    <h2 style="margin-top:10px">
+        Simple Rules for Infix → Postfix
+    </h2>
+
+    <p class="sub">
+        Remember these simple rules while converting.
+    </p>
+
+
+    <div class="rules">
+
+
+        <div class="rule">
+
+            <div class="rule-title">
+                RULE 1 — Operand → Output
+            </div>
+
+            <div class="rule-text">
+                If you see a letter or number,
+                put it directly into the output.
+
+                <br><br>
+
+                Example: A → Output
+
+                <br>
+
+                Example: 25 → Output
+            </div>
+
+        </div>
+
+
+        <div class="rule">
+
+            <div class="rule-title">
+                RULE 2 — ( → Push
+            </div>
+
+            <div class="rule-text">
+                If you see an opening bracket
+                <b>(</b>, push it into the stack.
+            </div>
+
+        </div>
+
+
+        <div class="rule">
+
+            <div class="rule-title">
+                RULE 3 — ) → Pop
+            </div>
+
+            <div class="rule-text">
+                If you see a closing bracket
+                <b>)</b>, pop operators from the stack
+                until <b>(</b> is found.
+
+                <br><br>
+
+                Then remove <b>(</b>.
+            </div>
+
+        </div>
+
+
+        <div class="rule">
+
+            <div class="rule-title">
+                RULE 4 — Operator → Check Priority
+            </div>
+
+            <div class="rule-text">
+
+                For +, -, *, /, %, and ^,
+                check their priority.
+
+                <br><br>
+
+                <b>^</b> → Highest
+
+                <br>
+
+                <b>* / %</b> → Medium
+
+                <br>
+
+                <b>+ -</b> → Lowest
+
+            </div>
+
+        </div>
+
+
+        <div class="rule">
+
+            <div class="rule-title">
+                RULE 5 — Higher Priority → Push
+            </div>
+
+            <div class="rule-text">
+                If the new operator has higher priority,
+                push it into the stack.
+
+                <br><br>
+
+                Example:
+
+                <b>*</b> has higher priority than <b>+</b>.
+            </div>
+
+        </div>
+
+
+        <div class="rule">
+
+            <div class="rule-title">
+                RULE 6 — Lower or Equal Priority → Pop
+            </div>
+
+            <div class="rule-text">
+                If the stack operator has higher or equal
+                priority, pop it into the output first.
+            </div>
+
+        </div>
+
+
+        <div class="rule">
+
+            <div class="rule-title">
+                RULE 7 — End → Pop All
+            </div>
+
+            <div class="rule-text">
+                When the expression is finished,
+                pop all remaining operators from the stack.
+            </div>
+
+        </div>
+
+
+        <div class="rule">
+
+            <div class="rule-title">
+                RULE 8 — Final Answer
+            </div>
+
+            <div class="rule-text">
+                The output obtained at the end
+                is the postfix expression.
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="memory">
+
+        <b>⭐ Easy Memory Trick</b>
+
+        <br>
+
+        Operand → <b>Output</b>
+
+        &nbsp; | &nbsp;
+
+        ( → <b>Push</b>
+
+        &nbsp; | &nbsp;
+
+        ) → <b>Pop</b>
+
+        &nbsp; | &nbsp;
+
+        Operator → <b>Check Priority</b>
+
+        &nbsp; | &nbsp;
+
+        End → <b>Pop All</b>
+
+    </div>
+
+</section>
+
+
+<!-- LIVE CONVERTER -->
+
+<section class="card">
+
+    <span class="badge">
+        03 • LIVE CONVERTER
+    </span>
+
+    <h2 style="margin-top:10px">
+        Enter an Infix Expression
+    </h2>
+
+    <p class="sub">
+        Type an expression and press
+        <b>Convert to Postfix</b>.
+    </p>
+
+
+    <textarea
+        id="expr"
+        spellcheck="false"
+    >A+B*(C-D)</textarea>
+
+
+    <div class="actions">
+
+        <button id="convert">
+            ⚡ Convert to Postfix
+        </button>
+
+        <button class="secondary" id="clear">
+            Clear
+        </button>
+
+        <button class="secondary" id="sample">
+            Load Sample
+        </button>
+
+    </div>
+
+
+    <div class="result">
+
+        <label>
+            Final Answer • Postfix Expression
+        </label>
+
+        <code id="result">
+            ABCD-*+
+        </code>
+
+    </div>
+
+
+    <!-- TRACE -->
+
+    <div class="steps">
+
+        <h2>
+            Conversion Trace
+        </h2>
+
+        <p class="sub">
+            Watch the stack and postfix output
+            change at every step.
+        </p>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Character</th>
+
+                    <th>Action</th>
+
+                    <th>Stack</th>
+
+                    <th>Postfix</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="rows"></tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- PSEUDOCODE -->
+
+<section class="card">
+
+    <span class="badge">
+        04 • PSEUDOCODE
+    </span>
+
+    <h2 style="margin-top:10px">
+        Algorithm
+    </h2>
+
+    <p class="sub">
+        This is the basic logic used by the C program.
+    </p>
+
+
+    <div class="pseudo">
+BEGIN
+
+Read infix expression
+
+Initialize empty stack
+
+Scan expression from left to right
+
+IF operand
+    Add to postfix
+
+ELSE IF '('
+    Push into stack
+
+ELSE IF ')'
+    Pop until '('
+
+ELSE IF operator
+    Check priority
+    Pop higher/equal priority
+    Push current operator
+
+Pop remaining operators
+
+Display postfix expression
+
+END
+    </div>
+
+
+    <p class="note">
+
+        <b>How the stack helps:</b>
+
+        The stack temporarily stores operators
+        and parentheses. It helps decide when
+        an operator should be added to the
+        postfix expression.
+
+    </p>
+
+
+    <p class="note">
+
+        <b>Precedence:</b>
+
+        <code>^</code> → Highest
+
+        &nbsp; | &nbsp;
+
+        <code>* / %</code> → Medium
+
+        &nbsp; | &nbsp;
+
+        <code>+ -</code> → Lowest
+
+    </p>
+
+
+    <div class="result">
+
+        <label>
+            Project Flow
+        </label>
+
+        <div style="margin-top:8px;line-height:1.9">
+
+            User Input
+
+            →
+
+            Scan Symbol
+
+            →
+
+            Identify Symbol
+
+            →
+
+            Apply Rule
+
+            →
+
+            Stack Operation
+
+            →
+
+            Postfix Output
+
+            →
+
+            Final Answer
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<script>
+
+const expr =
+    document.getElementById('expr');
+
+const result =
+    document.getElementById('result');
+
+const rows =
+    document.getElementById('rows');
+
+
+function precedence(character){
+
+    if(character === '^'){
+        return 3;
+    }
+
+    if(
+        character === '*' ||
+        character === '/' ||
+        character === '%'
+    ){
+        return 2;
+    }
+
+    if(
+        character === '+' ||
+        character === '-'
+    ){
+        return 1;
+    }
+
+    return 0;
+}
+
+
+function isOperator(character){
+
+    return '+-*/%^'.includes(character);
+
+}
+
+
+function convert(expression){
+
+    let stack = [];
+
+    let output = [];
+
+    let trace = [];
+
+
+    let tokens =
+        expression.match(
+            /[A-Za-z]+|\d+(?:\.\d+)?|[()+\-*/%^]/g
+        ) || [];
+
+
+    for(let character of tokens){
+
+        let action = "";
+
+
+        /* OPERAND */
+
+        if(
+            /^[A-Za-z]+$/.test(character) ||
+            /^\d+(?:\.\d+)?$/.test(character)
+        ){
+
+            output.push(character);
+
+            action =
+                "Operand → add to output";
+
+        }
+
+
+        /* OPENING BRACKET */
+
+        else if(character === "("){
+
+            stack.push(character);
+
+            action =
+                "Push (";
+
+        }
+
+
+        /* CLOSING BRACKET */
+
+        else if(character === ")"){
+
+            while(
+                stack.length > 0 &&
+                stack[stack.length - 1] !== "("
+            ){
+
+                output.push(
+                    stack.pop()
+                );
+
+            }
+
+
+            if(
+                stack.length > 0 &&
+                stack[stack.length - 1] === "("
+            ){
+
+                stack.pop();
+
+            }
+
+
+            action =
+                "Pop until (";
+
+        }
+
+
+        /* OPERATOR */
+
+        else if(isOperator(character)){
+
+            while(
+                stack.length > 0 &&
+                stack[stack.length - 1] !== "(" &&
+                precedence(
+                    stack[stack.length - 1]
+                ) >=
+                precedence(character)
+            ){
+
+                output.push(
+                    stack.pop()
+                );
+
+            }
+
+
+            stack.push(character);
+
+            action =
+                "Check priority → Push";
+
+        }
+
+
+        trace.push({
+
+            character:
+                character,
+
+            action:
+                action,
+
+            stack:
+                stack.join(" "),
+
+            postfix:
+                output.join(" ")
+
+        });
+
+    }
+
+
+    /* POP REMAINING OPERATORS */
+
+    while(stack.length > 0){
+
+        output.push(
+            stack.pop()
+        );
+
+
+        trace.push({
+
+            character:
+                "End",
+
+            action:
+                "Pop remaining operator",
+
+            stack:
+                stack.join(" "),
+
+            postfix:
+                output.join(" ")
+
+        });
+
+    }
+
+
+    return {
+
+        output:
+            output.join(" "),
+
+        trace:
+            trace
+
+    };
+
+}
+
+
+function render(){
+
+    const data =
+        convert(expr.value);
+
+
+    result.textContent =
+        data.output || "—";
+
+
+    rows.innerHTML =
+        data.trace.map(
+            row => `
+
+            <tr>
+
+                <td>
+                    <b>${row.character}</b>
+                </td>
+
+                <td>
+                    ${row.action}
+                </td>
+
+                <td class="stack">
+                    ${row.stack || "—"}
+                </td>
+
+                <td class="stack">
+                    ${row.postfix || "—"}
+                </td>
+
+            </tr>
+
+            `
+        ).join("");
+
+
+    if(data.trace.length === 0){
+
+        rows.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    Enter an expression to begin.
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+document
+    .getElementById("convert")
+    .onclick = render;
+
+
+document
+    .getElementById("clear")
+    .onclick = function(){
+
+        expr.value = "";
+
+        render();
+
+    };
+
+
+document
+    .getElementById("sample")
+    .onclick = function(){
+
+        expr.value =
+            "A+B*(C-D)";
+
+        render();
+
+    };
+
+
+render();
+
+</script>
+
+</body>
+</html>
