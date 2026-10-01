@@ -6,175 +6,166 @@
 <title>StackFlow • Infix to Postfix</title>
 
 <style>
+.collapsible>h2{
+    cursor:pointer;
+    user-select:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 12px;
+    border-radius:12px;
+    transition:.2s
+}
+
+.collapsible>h2:hover{
+    background:#eefaf9
+}
+
+.collapsible>h2::after{
+    content:'⌃';
+    font-size:18px;
+    color:#0f8f8a
+}
+
+.collapsible.collapsed>h2::after{
+    content:'⌄'
+}
+
+.collapsible.collapsed>h2~*{
+    display:none
+}
+
+.card{
+    transition:.2s
+}
+
+.card:hover{
+    border-color:#25a9a3;
+    box-shadow:0 16px 36px rgba(15,143,138,.13)
+}
+
+.result{
+    transition:.2s;
+    border:1px solid #d9d5f5;
+    border-radius:14px;
+    background:#fff;
+    padding:16px
+}
+
+.result:hover{
+    border-color:#25a9a3;
+    box-shadow:0 6px 18px rgba(15,143,138,.10)
+}
+
+.result h3{
+    margin:7px 0;
+    color:#182033;
+    font-size:16px
+}
+
+.result .sub{
+    margin:0
+}
+
 *{
-    box-sizing:border-box;
+    box-sizing:border-box
 }
 
 body{
     margin:0;
-    background:#050816;
+    background:#f4f7fb;
     font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
-    color:#f5f7ff;
+    color:#182033
 }
 
 #app{
     min-height:100vh;
-    background:
-    radial-gradient(circle at 8% 0%,rgba(124,92,255,.32),transparent 25%),
-    radial-gradient(circle at 92% 12%,rgba(0,229,255,.2),transparent 23%),
-    linear-gradient(135deg,#050816 0%,#0b1230 48%,#030712 100%);
+    background:linear-gradient(
+        135deg,
+        #f8fbff 0%,
+        #eef4ff 48%,
+        #f7f9fc 100%
+    )
 }
 
 .header{
     padding:52px 6vw 36px;
-    border-bottom:1px solid rgba(255,255,255,.12);
-    background:rgba(8,12,28,.82);
+    border-bottom:1px solid #dbe3ef;
+    background:rgba(255,255,255,.94);
+    backdrop-filter:blur(18px)
 }
 
 .eyebrow{
     font-size:12px;
     letter-spacing:.16em;
     text-transform:uppercase;
-    color:#9b8cff;
-    font-weight:900;
+    color:#0f8f8a;
+    font-weight:900
 }
 
 .header h1{
-    margin:10px 0;
+    margin:10px 0 10px;
     font-size:clamp(34px,5vw,58px);
-    color:white;
+    letter-spacing:-.05em;
+    color:#182033
 }
 
 .header p{
     margin:0;
-    color:#b8c1d9;
+    color:#596579;
     max-width:760px;
     font-size:16px;
-    line-height:1.7;
+    line-height:1.7
 }
 
 .main{
     width:min(1180px,92vw);
-    margin:30px auto 55px;
+    margin:30px auto 55px
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    gap:22px
 }
 
 .card{
-    background:rgba(20,27,52,.78);
-    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.96);
+    border:1px solid #dbe3ef;
     border-radius:22px;
     padding:24px;
-    margin-bottom:22px;
+    box-shadow:0 14px 35px rgba(39,58,89,.10);
+    backdrop-filter:blur(14px)
 }
 
 .card h2{
     margin:0 0 5px;
+    font-size:19px;
+    color:#182033
 }
 
 .sub{
-    color:#9da8c2;
+    color:#667085;
     font-size:13px;
-    line-height:1.7;
-}
-
-.badge{
-    display:inline-block;
-    padding:5px 9px;
-    border-radius:999px;
-    background:rgba(139,124,255,.14);
-    border:1px solid rgba(139,124,255,.22);
-    color:#b8acff;
-    font-size:11px;
-    font-weight:900;
-}
-
-.result{
-    margin-top:18px;
-    padding:16px;
-    border-radius:14px;
-    background:linear-gradient(
-        135deg,
-        rgba(124,92,255,.16),
-        rgba(0,210,255,.08)
-    );
-    border:1px solid rgba(139,124,255,.22);
-}
-
-.result label{
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:.1em;
-    color:#9da8c2;
-    font-weight:900;
-}
-
-.result code{
-    display:block;
-    font-size:24px;
-    margin-top:6px;
-    font-weight:900;
-    color:#b9adff;
-    word-break:break-all;
-}
-
-.rules{
-    display:flex;
-    flex-direction:column;
-    gap:15px;
-}
-
-.rule{
-    padding:16px;
-    background:rgba(3,7,18,.65);
-    border:1px solid rgba(255,255,255,.08);
-    border-left:4px solid #7c5cff;
-    border-radius:12px;
-}
-
-.rule-title{
-    color:#b9adff;
-    font-weight:900;
-    margin-bottom:7px;
-}
-
-.rule-text{
-    color:#dce5ff;
-    line-height:1.6;
-}
-
-.memory{
-    margin-top:18px;
-    padding:18px;
-    border-radius:14px;
-    background:linear-gradient(
-        135deg,
-        rgba(124,92,255,.16),
-        rgba(0,210,255,.08)
-    );
-    line-height:2;
+    margin:0 0 18px
 }
 
 textarea{
     width:100%;
     min-height:82px;
     resize:vertical;
-    border:1px solid rgba(255,255,255,.14);
-    background:rgba(6,10,24,.7);
-    color:white;
+    border:1px solid #cbd5e1;
+    background:#f8fafc;
+    color:#182033;
     border-radius:14px;
     padding:15px;
     font:600 16px ui-monospace,SFMono-Regular,Menlo,monospace;
-    outline:none;
+    outline:none
 }
 
 textarea:focus{
-    border-color:#8b7cff;
-}
-
-.actions{
-    display:flex;
-    gap:10px;
-    margin-top:12px;
-    flex-wrap:wrap;
+    border-color:#25a9a3;
+    box-shadow:0 0 0 3px rgba(37,169,163,.13)
 }
 
 button{
@@ -183,74 +174,124 @@ button{
     padding:11px 16px;
     font-weight:800;
     cursor:pointer;
-    background:linear-gradient(135deg,#7c5cff,#5b8cff);
+    background:linear-gradient(135deg,#0f8f8a,#25a9a3);
     color:white;
+    box-shadow:0 8px 20px rgba(15,143,138,.20)
 }
 
 button.secondary{
-    background:rgba(255,255,255,.07);
-    color:#e9ecf7;
-    border:1px solid rgba(255,255,255,.12);
+    background:#f8fafc;
+    color:#344054;
+    border:1px solid #d0d5dd
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+    flex-wrap:wrap
+}
+
+.result{
+    margin-top:18px;
+    padding:16px;
+    border-radius:14px;
+    background:linear-gradient(135deg,#f0edff,#e8fbf8);
+    border:1px solid #d9d5f5
+}
+
+.result label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:#667085;
+    font-weight:900
+}
+
+.result code{
+    display:block;
+    font-size:24px;
+    margin-top:6px;
+    font-weight:900;
+    word-break:break-all;
+    color:#4f46a5
+}
+
+.pseudo{
+    background:#f8fafc;
+    color:#344054;
+    border:1px solid #dbe3ef;
+    border-radius:14px;
+    padding:17px;
+    overflow:auto;
+    font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;
+    white-space:pre
 }
 
 .steps{
     margin-top:20px;
-    overflow:auto;
+    overflow:auto
 }
 
 .steps table{
     width:100%;
     border-collapse:collapse;
-    font-size:13px;
+    font-size:13px
 }
 
 .steps th,
 .steps td{
     text-align:left;
     padding:10px 8px;
-    border-bottom:1px solid rgba(255,255,255,.08);
+    border-bottom:1px solid #e4e7ec
 }
 
 .steps th{
-    color:#8f9bb7;
+    color:#667085;
     font-size:11px;
-    text-transform:uppercase;
+    text-transform:uppercase
 }
 
 .steps td{
-    color:#d7dcef;
+    color:#344054
 }
 
 .stack{
-    font-family:ui-monospace,monospace;
-}
-
-.pseudo{
-    background:rgba(3,7,18,.78);
-    color:#dce5ff;
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:14px;
-    padding:17px;
-    overflow:auto;
-    font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;
-    white-space:pre;
+    font-family:ui-monospace,monospace
 }
 
 .note{
     font-size:13px;
-    color:#aab4cc;
+    color:#667085;
     line-height:1.65;
-    margin-top:14px;
+    margin-top:14px
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#e5f8f7;
+    border:1px solid #bfe8e5;
+    color:#0f8f8a;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:.06em
 }
 
 @media(max-width:850px){
+
+    .grid{
+        grid-template-columns:1fr
+    }
+
     .main{
-        width:min(94vw,720px);
+        width:min(94vw,720px)
     }
 
     .header{
         padding-left:3vw;
-        padding-right:3vw;
+        padding-right:3vw
     }
 }
 </style>
@@ -267,36 +308,72 @@ button.secondary{
     </div>
 
     <h1>
-        StackFlow <span>Infix → Postfix</span>
+        StackFlow
+        <span class="accent">Infix → Postfix</span>
     </h1>
 
     <p>
-        Interactive stack visualizer for converting
-        infix expressions into postfix notation.
+        Interactive stack visualizer for converting infix expressions
+        into postfix notation.
     </p>
 
     <div class="actions" style="margin-top:18px">
 
-        <span class="badge">▣ STACK BASED</span>
+        <span class="badge">
+            ▣ STACK BASED
+        </span>
 
-        <span class="badge">⌘ C IMPLEMENTATION</span>
+        <span class="badge">
+            ⌘ C IMPLEMENTATION
+        </span>
 
-        <span class="badge">● LIVE TRACE</span>
+        <span class="badge">
+            ● LIVE TRACE
+        </span>
 
     </div>
 
 </header>
 
 
-<main class="main">
+<!-- TOPIC NAVIGATION -->
+
+<nav
+    id="topicNav"
+    style="
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:12px;
+        margin:24px auto 0;
+        width:min(1180px,92vw)
+    "
+>
+
+    <a href="#introduction">Introduction</a>
+
+    <a href="#rules">Conversion Rules</a>
+
+    <a href="#complexity">Time Complexity</a>
+
+    <a href="#converter">Live Converter</a>
+
+    <a href="#pseudocode">Pseudocode</a>
+
+    <a href="#cprogram">C Program</a>
+
+</nav>
 
 
-<!-- TOPIC INTRODUCTION -->
+<!-- INTRODUCTION -->
 
-<section class="card">
+<section
+    class="card"
+    id="introduction"
+    style="margin:24px auto 0;max-width:1180px"
+>
 
     <span class="badge">
-        01 • TOPIC INTRODUCTION
+        00 • TOPIC INTRODUCTION
     </span>
 
     <h2 style="margin-top:10px">
@@ -305,34 +382,41 @@ button.secondary{
 
     <p class="sub">
         An infix expression places operators between operands,
-        such as <b>A + B</b>.
+        such as <b>A + B</b>. A postfix expression places the
+        operator after its operands, such as <b>AB+</b>.
+        Postfix notation does not need parentheses to show the
+        order of operations, so it is convenient for computers
+        to evaluate using a stack.
     </p>
 
     <p class="sub">
-        A postfix expression places the operator after its operands,
-        such as <b>AB+</b>.
-    </p>
-
-    <p class="sub">
-        A stack is used to temporarily store operators and
-        parentheses during conversion.
+        In this project, a stack is used to temporarily store
+        operators and parentheses while the expression is scanned
+        from left to right. Operands are added directly to the
+        postfix expression, while operators are pushed or popped
+        according to their precedence.
     </p>
 
     <div class="result">
 
-        <label>Simple Idea</label>
+        <label>
+            Simple idea
+        </label>
 
         <div style="margin-top:8px;line-height:1.9">
 
-            <b>Infix:</b> A + B
+            <b>Infix:</b>
+            A + B
 
             &nbsp; → &nbsp;
 
-            <b>Postfix:</b> AB+
+            <b>Postfix:</b>
+            AB+
 
             &nbsp; → &nbsp;
 
-            <b>Stack:</b> manages operators
+            <b>Stack:</b>
+            manages operators
 
         </div>
 
@@ -341,217 +425,332 @@ button.secondary{
 </section>
 
 
-<!-- SIMPLE RULES -->
+<!-- CONVERSION RULES -->
 
-<section class="card">
+<section
+    class="card"
+    id="rules"
+    style="margin:24px auto 0;max-width:1180px"
+>
 
     <span class="badge">
-        02 • CONVERSION RULES
+        00.1 • CONVERSION RULES
     </span>
 
     <h2 style="margin-top:10px">
-        Simple Rules for Infix → Postfix
+        Rules for Infix → Postfix Conversion
     </h2>
 
     <p class="sub">
-        Remember these simple rules while converting.
+        The conversion is done from left to right.
+        Each rule is shown separately for easy reading.
     </p>
 
 
-    <div class="rules">
+    <div
+        style="
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:14px
+        "
+    >
 
+        <div class="result" style="margin-top:0">
 
-        <div class="rule">
+            <label>RULE 1</label>
 
-            <div class="rule-title">
-                RULE 1 — Operand → Output
-            </div>
+            <h3>
+                Scan left to right
+            </h3>
 
-            <div class="rule-text">
-                If you see a letter or number,
-                put it directly into the output.
-
-                <br><br>
-
-                Example: A → Output
-
-                <br>
-
-                Example: 25 → Output
-            </div>
-
-        </div>
-
-
-        <div class="rule">
-
-            <div class="rule-title">
-                RULE 2 — ( → Push
-            </div>
-
-            <div class="rule-text">
-                If you see an opening bracket
-                <b>(</b>, push it into the stack.
-            </div>
+            <p class="sub">
+                Read the expression one operand, operator,
+                or bracket at a time.
+            </p>
 
         </div>
 
 
-        <div class="rule">
+        <div class="result" style="margin-top:0">
 
-            <div class="rule-title">
-                RULE 3 — ) → Pop
-            </div>
+            <label>RULE 2</label>
 
-            <div class="rule-text">
-                If you see a closing bracket
-                <b>)</b>, pop operators from the stack
-                until <b>(</b> is found.
+            <h3>
+                Operand
+            </h3>
 
-                <br><br>
-
-                Then remove <b>(</b>.
-            </div>
+            <p class="sub">
+                A letter or complete number goes directly
+                to the postfix output.
+            </p>
 
         </div>
 
 
-        <div class="rule">
+        <div class="result" style="margin-top:0">
 
-            <div class="rule-title">
-                RULE 4 — Operator → Check Priority
-            </div>
+            <label>RULE 3</label>
 
-            <div class="rule-text">
+            <h3>
+                Opening parenthesis
+            </h3>
 
-                For +, -, *, /, %, and ^,
-                check their priority.
-
-                <br><br>
-
-                <b>^</b> → Highest
-
-                <br>
-
-                <b>* / %</b> → Medium
-
-                <br>
-
-                <b>+ -</b> → Lowest
-
-            </div>
+            <p class="sub">
+                Push <b>(</b> into the stack.
+            </p>
 
         </div>
 
 
-        <div class="rule">
+        <div class="result" style="margin-top:0">
 
-            <div class="rule-title">
-                RULE 5 — Higher Priority → Push
-            </div>
+            <label>RULE 4</label>
 
-            <div class="rule-text">
-                If the new operator has higher priority,
-                push it into the stack.
+            <h3>
+                Closing parenthesis
+            </h3>
 
-                <br><br>
-
-                Example:
-
-                <b>*</b> has higher priority than <b>+</b>.
-            </div>
+            <p class="sub">
+                Pop operators until <b>(</b> is found,
+                then remove the <b>(</b>.
+            </p>
 
         </div>
 
 
-        <div class="rule">
+        <div class="result" style="margin-top:0">
 
-            <div class="rule-title">
-                RULE 6 — Lower or Equal Priority → Pop
-            </div>
+            <label>RULE 5</label>
 
-            <div class="rule-text">
-                If the stack operator has higher or equal
-                priority, pop it into the output first.
-            </div>
+            <h3>
+                Operator
+            </h3>
 
-        </div>
-
-
-        <div class="rule">
-
-            <div class="rule-title">
-                RULE 7 — End → Pop All
-            </div>
-
-            <div class="rule-text">
-                When the expression is finished,
-                pop all remaining operators from the stack.
-            </div>
+            <p class="sub">
+                Check the current operator against the
+                operator at the top of the stack.
+            </p>
 
         </div>
 
 
-        <div class="rule">
+        <div class="result" style="margin-top:0">
 
-            <div class="rule-title">
-                RULE 8 — Final Answer
-            </div>
+            <label>RULE 6</label>
 
-            <div class="rule-text">
-                The output obtained at the end
-                is the postfix expression.
-            </div>
+            <h3>
+                Higher precedence
+            </h3>
+
+            <p class="sub">
+                If the current operator has higher
+                precedence, push it onto the stack.
+            </p>
 
         </div>
 
+
+        <div class="result" style="margin-top:0">
+
+            <label>RULE 7</label>
+
+            <h3>
+                Lower or equal precedence
+            </h3>
+
+            <p class="sub">
+                Pop higher or equal precedence operators
+                to the output, then push the current operator.
+            </p>
+
+        </div>
+
+
+        <div class="result" style="margin-top:0">
+
+            <label>RULE 8</label>
+
+            <h3>
+                End of expression
+            </h3>
+
+            <p class="sub">
+                After all input is processed, pop every
+                remaining operator from the stack.
+            </p>
+
+        </div>
+
+
+        <div class="result" style="margin-top:0">
+
+            <label>RULE 9</label>
+
+            <h3>
+                Final postfix
+            </h3>
+
+            <p class="sub">
+                The output after all stack operations is
+                the final postfix expression.
+            </p>
+
+        </div>
 
     </div>
 
 
-    <div class="memory">
+    <div class="result">
 
-        <b>⭐ Easy Memory Trick</b>
+        <label>
+            Operator Precedence
+        </label>
 
-        <br>
+        <div style="margin-top:8px;line-height:1.9">
 
-        Operand → <b>Output</b>
+            <b>^</b> → Highest
 
-        &nbsp; | &nbsp;
+            &nbsp;&nbsp;
 
-        ( → <b>Push</b>
+            <b>* / %</b> → Medium
 
-        &nbsp; | &nbsp;
+            &nbsp;&nbsp;
 
-        ) → <b>Pop</b>
+            <b>+ -</b> → Lowest
 
-        &nbsp; | &nbsp;
+        </div>
 
-        Operator → <b>Check Priority</b>
+    </div>
 
-        &nbsp; | &nbsp;
 
-        End → <b>Pop All</b>
+    <div class="result">
+
+        <label>
+            Easy Memory Trick
+        </label>
+
+        <div style="margin-top:8px;line-height:1.9">
+
+            <b>Operand → Output</b>
+
+            &nbsp; | &nbsp;
+
+            <b>( → Push</b>
+
+            &nbsp; | &nbsp;
+
+            <b>) → Pop</b>
+
+            &nbsp; | &nbsp;
+
+            <b>Operator → Check precedence</b>
+
+            &nbsp; | &nbsp;
+
+            <b>End → Pop all</b>
+
+        </div>
 
     </div>
 
 </section>
+
+
+<!-- COMPLEXITY -->
+
+<section
+    class="card"
+    id="complexity"
+    style="margin:24px auto 0;max-width:1180px"
+>
+
+    <span class="badge">
+        00.3 • TIME COMPLEXITY
+    </span>
+
+    <h2 style="margin-top:10px">
+        Time and Space Complexity
+    </h2>
+
+    <p class="sub">
+        The complexity depends on the number of symbols
+        in the input expression.
+    </p>
+
+
+    <div class="result">
+
+        <label>
+            Time Complexity
+        </label>
+
+        <div style="margin-top:8px;line-height:1.9">
+
+            <b>O(n)</b> —
+            Each token is scanned once, and stack operations
+            take constant time.
+
+        </div>
+
+    </div>
+
+
+    <div class="result">
+
+        <label>
+            Space Complexity
+        </label>
+
+        <div style="margin-top:8px;line-height:1.9">
+
+            <b>O(n)</b> —
+            The stack and postfix output can store up to
+            n tokens in the worst case.
+
+        </div>
+
+    </div>
+
+
+    <div class="result">
+
+        <label>
+            Where n =
+        </label>
+
+        <div style="margin-top:8px;line-height:1.9">
+
+            Number of tokens or symbols in the input expression.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<main class="main">
+
+<div class="grid">
 
 
 <!-- LIVE CONVERTER -->
 
-<section class="card">
+<section
+    class="card"
+    id="converter"
+>
 
     <span class="badge">
-        03 • LIVE CONVERTER
+        01 • LIVE CONVERTER
     </span>
 
     <h2 style="margin-top:10px">
-        Enter an Infix Expression
+        Enter an infix expression
     </h2>
 
     <p class="sub">
-        Type an expression and press
+        Type an expression, then press
         <b>Convert to Postfix</b>.
     </p>
 
@@ -568,11 +767,17 @@ button.secondary{
             ⚡ Convert to Postfix
         </button>
 
-        <button class="secondary" id="clear">
+        <button
+            class="secondary"
+            id="clear"
+        >
             Clear
         </button>
 
-        <button class="secondary" id="sample">
+        <button
+            class="secondary"
+            id="sample"
+        >
             Load Sample
         </button>
 
@@ -592,17 +797,15 @@ button.secondary{
     </div>
 
 
-    <!-- TRACE -->
-
     <div class="steps">
 
         <h2>
-            Conversion Trace
+            Conversion trace
         </h2>
 
         <p class="sub">
-            Watch the stack and postfix output
-            change at every step.
+            Watch the stack and postfix output change
+            at every character.
         </p>
 
 
@@ -611,19 +814,13 @@ button.secondary{
             <thead>
 
                 <tr>
-
-                    <th>Character</th>
-
+                    <th>Char</th>
                     <th>Action</th>
-
                     <th>Stack</th>
-
                     <th>Postfix</th>
-
                 </tr>
 
             </thead>
-
 
             <tbody id="rows"></tbody>
 
@@ -636,60 +833,53 @@ button.secondary{
 
 <!-- PSEUDOCODE -->
 
-<section class="card">
+<section
+    class="card"
+    id="pseudocode"
+>
 
     <span class="badge">
-        04 • PSEUDOCODE
+        PSEUDOCODE
     </span>
 
     <h2 style="margin-top:10px">
-        Algorithm
+        Algorithm used
     </h2>
 
     <p class="sub">
-        This is the basic logic used by the C program.
+        This is the logic implemented by the C program.
     </p>
 
 
-    <div class="pseudo">
-BEGIN
+    <div class="pseudo">BEGIN
+    Read infix expression
+    Initialize empty stack
+    Scan left to right
 
-Read infix expression
+    IF operand
+        Add to postfix
+    ELSE IF '('
+        Push into stack
+    ELSE IF ')'
+        Pop until '('
+    ELSE IF operator
+        Pop higher/equal precedence
+        Push current operator
 
-Initialize empty stack
-
-Scan expression from left to right
-
-IF operand
-    Add to postfix
-
-ELSE IF '('
-    Push into stack
-
-ELSE IF ')'
-    Pop until '('
-
-ELSE IF operator
-    Check priority
-    Pop higher/equal priority
-    Push current operator
-
-Pop remaining operators
-
-Display postfix expression
-
-END
-    </div>
+    Pop remaining operators
+    Display postfix expression
+END</div>
 
 
     <p class="note">
 
         <b>How the stack helps:</b>
 
-        The stack temporarily stores operators
-        and parentheses. It helps decide when
-        an operator should be added to the
-        postfix expression.
+        The stack temporarily stores operators and
+        parentheses. It prevents an operator from being
+        placed in the output too early. When a new operator
+        is read, precedence decides whether the old operator
+        should leave the stack first.
 
     </p>
 
@@ -698,59 +888,179 @@ END
 
         <b>Precedence:</b>
 
-        <code>^</code> → Highest
+        <code>^</code> →
+        <code>* / %</code> →
+        <code>+ -</code>.
 
-        &nbsp; | &nbsp;
-
-        <code>* / %</code> → Medium
-
-        &nbsp; | &nbsp;
-
-        <code>+ -</code> → Lowest
+        The project uses an array-based stack,
+        matching the core C implementation.
 
     </p>
 
+</section>
 
-    <div class="result">
 
-        <label>
-            Project Flow
-        </label>
+<!-- C PROGRAM -->
 
-        <div style="margin-top:8px;line-height:1.9">
+<section
+    class="card"
+    id="cprogram"
+>
 
-            User Input
+    <span class="badge">
+        C PROGRAM
+    </span>
 
-            →
+    <h2 style="margin-top:10px">
+        C Implementation
+    </h2>
 
-            Scan Symbol
+    <p class="sub">
+        The following C program uses an array-based stack
+        to convert an infix expression into postfix notation.
+    </p>
 
-            →
 
-            Identify Symbol
+    <div class="pseudo">#include &lt;stdio.h&gt;
+#include &lt;ctype.h&gt;
 
-            →
+#define MAX 100
 
-            Apply Rule
+char stack[MAX];
+int top = -1;
 
-            →
+void push(char value)
+{
+    stack[++top] = value;
+}
 
-            Stack Operation
+char pop()
+{
+    return stack[top--];
+}
 
-            →
+char peek()
+{
+    return stack[top];
+}
 
-            Postfix Output
+int isEmpty()
+{
+    return top == -1;
+}
 
-            →
+int precedence(char operator)
+{
+    if (operator == '^')
+        return 3;
 
-            Final Answer
+    if (operator == '*' ||
+        operator == '/' ||
+        operator == '%')
+        return 2;
 
-        </div>
+    if (operator == '+' ||
+        operator == '-')
+        return 1;
 
-    </div>
+    return 0;
+}
+
+int isOperator(char character)
+{
+    return character == '+' ||
+           character == '-' ||
+           character == '*' ||
+           character == '/' ||
+           character == '%' ||
+           character == '^';
+}
+
+void infixToPostfix(char infix[], char postfix[])
+{
+    int i = 0;
+    int j = 0;
+    char character;
+
+    while (infix[i] != '\0')
+    {
+        character = infix[i];
+
+        if (isalnum(character))
+        {
+            postfix[j++] = character;
+        }
+
+        else if (character == '(')
+        {
+            push(character);
+        }
+
+        else if (character == ')')
+        {
+            while (!isEmpty() &&
+                   peek() != '(')
+            {
+                postfix[j++] = pop();
+            }
+
+            if (!isEmpty() &&
+                peek() == '(')
+            {
+                pop();
+            }
+        }
+
+        else if (isOperator(character))
+        {
+            while (!isEmpty() &&
+                   peek() != '(' &&
+                   precedence(peek()) >=
+                   precedence(character))
+            {
+                postfix[j++] = pop();
+            }
+
+            push(character);
+        }
+
+        i++;
+    }
+
+    while (!isEmpty())
+    {
+        postfix[j++] = pop();
+    }
+
+    postfix[j] = '\0';
+}
+
+int main()
+{
+    char infix[MAX];
+    char postfix[MAX];
+
+    printf("=====================================\n");
+    printf("   INFIX TO POSTFIX CONVERTER\n");
+    printf("=====================================\n\n");
+
+    printf("Enter an infix expression: ");
+
+    scanf("%99s", infix);
+
+    infixToPostfix(infix, postfix);
+
+    printf("\nInfix Expression  : %s", infix);
+
+    printf("\nPostfix Expression: %s\n",
+           postfix);
+
+    return 0;
+}</div>
 
 </section>
 
+</div>
 
 </main>
 
@@ -769,285 +1079,317 @@ const rows =
     document.getElementById('rows');
 
 
-function precedence(character){
-
-    if(character === '^'){
-        return 3;
-    }
-
-    if(
-        character === '*' ||
-        character === '/' ||
-        character === '%'
-    ){
-        return 2;
-    }
-
-    if(
-        character === '+' ||
-        character === '-'
-    ){
-        return 1;
-    }
-
-    return 0;
+function prec(c)
+{
+    return c === '^'
+        ? 3
+        : '*/%'.includes(c)
+        ? 2
+        : '+-'.includes(c)
+        ? 1
+        : 0;
 }
 
 
-function isOperator(character){
-
-    return '+-*/%^'.includes(character);
-
+function op(c)
+{
+    return '+-*/%^'.includes(c);
 }
 
 
-function convert(expression){
-
-    let stack = [];
-
-    let output = [];
-
+function convert(s)
+{
+    let st = [];
+    let out = [];
     let trace = [];
 
-
     let tokens =
-        expression.match(
+        s.match(
             /[A-Za-z]+|\d+(?:\.\d+)?|[()+\-*/%^]/g
         ) || [];
 
 
-    for(let character of tokens){
+    const snap = () =>
+        st.join(' ');
 
-        let action = "";
+
+    const output = () =>
+        out.join(' ');
 
 
-        /* OPERAND */
+    for (const c of tokens)
+    {
+        let action = '';
 
-        if(
-            /^[A-Za-z]+$/.test(character) ||
-            /^\d+(?:\.\d+)?$/.test(character)
-        ){
 
-            output.push(character);
+        if (
+            /^[A-Za-z]+$/.test(c) ||
+            /^\d+(?:\.\d+)?$/.test(c)
+        )
+        {
+            out.push(c);
 
             action =
-                "Operand → add to output";
-
+                'Operand → add to postfix';
         }
 
 
-        /* OPENING BRACKET */
-
-        else if(character === "("){
-
-            stack.push(character);
+        else if (c === '(')
+        {
+            st.push(c);
 
             action =
-                "Push (";
-
+                "Push '('";
         }
 
 
-        /* CLOSING BRACKET */
-
-        else if(character === ")"){
-
-            while(
-                stack.length > 0 &&
-                stack[stack.length - 1] !== "("
-            ){
-
-                output.push(
-                    stack.pop()
-                );
-
+        else if (c === ')')
+        {
+            while (
+                st.length &&
+                st.at(-1) !== '('
+            )
+            {
+                out.push(st.pop());
             }
 
-
-            if(
-                stack.length > 0 &&
-                stack[stack.length - 1] === "("
-            ){
-
-                stack.pop();
-
+            if (
+                st.at(-1) === '('
+            )
+            {
+                st.pop();
             }
-
 
             action =
-                "Pop until (";
-
+                "Pop until '('";
         }
 
 
-        /* OPERATOR */
-
-        else if(isOperator(character)){
-
-            while(
-                stack.length > 0 &&
-                stack[stack.length - 1] !== "(" &&
-                precedence(
-                    stack[stack.length - 1]
-                ) >=
-                precedence(character)
-            ){
-
-                output.push(
-                    stack.pop()
-                );
-
+        else if (op(c))
+        {
+            while (
+                st.length &&
+                st.at(-1) !== '(' &&
+                prec(st.at(-1)) >= prec(c)
+            )
+            {
+                out.push(st.pop());
             }
 
-
-            stack.push(character);
+            st.push(c);
 
             action =
-                "Check priority → Push";
+                'Compare precedence → push operator';
+        }
 
+
+        else
+        {
+            action =
+                'Ignored invalid character';
         }
 
 
         trace.push({
-
-            character:
-                character,
-
-            action:
-                action,
-
-            stack:
-                stack.join(" "),
-
-            postfix:
-                output.join(" ")
-
+            c,
+            action,
+            stack:snap(),
+            out:output()
         });
-
     }
 
 
-    /* POP REMAINING OPERATORS */
-
-    while(stack.length > 0){
-
-        output.push(
-            stack.pop()
-        );
-
+    while (st.length)
+    {
+        out.push(st.pop());
 
         trace.push({
-
-            character:
-                "End",
-
-            action:
-                "Pop remaining operator",
-
-            stack:
-                stack.join(" "),
-
-            postfix:
-                output.join(" ")
-
+            c:'End',
+            action:'Pop remaining operator',
+            stack:snap(),
+            out:output()
         });
-
     }
 
 
     return {
-
-        output:
-            output.join(" "),
-
-        trace:
-            trace
-
+        out:output(),
+        trace
     };
-
 }
 
 
-function render(){
-
-    const data =
+function render()
+{
+    const x =
         convert(expr.value);
 
 
     result.textContent =
-        data.output || "—";
+        x.out || '—';
 
 
     rows.innerHTML =
-        data.trace.map(
-            row => `
-
+        x.trace
+        .map(r => `
             <tr>
-
                 <td>
-                    <b>${row.character}</b>
+                    <b>${r.c}</b>
                 </td>
 
                 <td>
-                    ${row.action}
+                    ${r.action}
                 </td>
 
                 <td class="stack">
-                    ${row.stack || "—"}
+                    ${r.stack || '—'}
                 </td>
 
                 <td class="stack">
-                    ${row.postfix || "—"}
-                </td>
-
-            </tr>
-
-            `
-        ).join("");
-
-
-    if(data.trace.length === 0){
-
-        rows.innerHTML = `
-            <tr>
-                <td colspan="4">
-                    Enter an expression to begin.
+                    ${r.out || '—'}
                 </td>
             </tr>
-        `;
+        `)
+        .join('')
 
-    }
+        ||
 
+        `<tr>
+            <td colspan="4">
+                Enter an expression to begin.
+            </td>
+        </tr>`;
 }
 
 
-document
-    .getElementById("convert")
-    .onclick = render;
-
+/* COLLAPSIBLE CARDS */
 
 document
-    .getElementById("clear")
-    .onclick = function(){
+    .querySelectorAll('.card')
+    .forEach(card =>
+    {
+        card.classList.add('collapsible');
 
-        expr.value = "";
+        const h =
+            card.querySelector(':scope>h2');
 
+        if (h)
+        {
+            h.onclick = () =>
+                card.classList.toggle('collapsed');
+        }
+    });
+
+
+/* TOPIC LINKS */
+
+const topics = [
+
+    ['Introduction','introduction'],
+
+    ['Conversion Rules','rules'],
+
+    ['Time Complexity','complexity'],
+
+    ['Live Converter','converter'],
+
+    ['Pseudocode','pseudocode'],
+
+    ['C Program','cprogram']
+
+];
+
+
+const nav =
+    document.getElementById('topicNav');
+
+
+nav.style.cssText = `
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin:24px auto 0;
+    width:min(1180px,92vw);
+`;
+
+
+topics.forEach(t =>
+{
+    const a =
+        nav.querySelector(
+            `a[href="#${t[1]}"]`
+        );
+
+
+    if (!a)
+        return;
+
+
+    a.style.cssText = `
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        min-height:54px;
+        padding:12px;
+        border:1px solid #dbe3ef;
+        border-radius:14px;
+        background:#fff;
+        color:#182033;
+        text-decoration:none;
+        font-weight:800;
+        font-size:13px;
+        box-shadow:0 6px 16px rgba(39,58,89,.07);
+        cursor:pointer;
+        touch-action:manipulation;
+    `;
+
+
+    a.addEventListener(
+        'click',
+        e =>
+        {
+            e.preventDefault();
+
+            const target =
+                document.getElementById(t[1]);
+
+            if (target)
+            {
+                target.scrollIntoView({
+                    behavior:'smooth',
+                    block:'start'
+                });
+            }
+        }
+    );
+});
+
+
+/* BUTTONS */
+
+document.getElementById('convert').onclick =
+    render;
+
+
+document.getElementById('clear').onclick =
+    () =>
+    {
+        expr.value = '';
         render();
-
     };
 
 
-document
-    .getElementById("sample")
-    .onclick = function(){
-
+document.getElementById('sample').onclick =
+    () =>
+    {
         expr.value =
-            "A+B*(C-D)";
+            'A*(B+C)/D';
 
         render();
-
     };
 
+
+/* INITIAL OUTPUT */
 
 render();
 
